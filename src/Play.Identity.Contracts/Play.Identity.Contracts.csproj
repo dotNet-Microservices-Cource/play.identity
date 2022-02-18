@@ -2,6 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <PackageDescription>Identity Contracts used by Play Economy services.</PackageDescription>
+    <Authors>Kristian Ganchev</Authors>
+    <Company>krisganchev</Company>
   </PropertyGroup>
 
 </Project>
