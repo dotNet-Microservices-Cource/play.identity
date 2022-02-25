@@ -31,7 +31,7 @@ spec:
             valueFrom:
               secretKeyRef:
                 name: identity-secrets
-                key: admin-password        
+                key: admin-password-connectionstring       
         resources:
           limits:
             memory: "128Mi"
