@@ -16,6 +16,10 @@ using Play.Identity.Service.Entities;
 using Play.Identity.Service.HostedServices;
 using Play.Identity.Service.Settings;
 using Play.Identity.Settings;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using MongoDB.Driver;
+using Play.Identity.Service.HealthChecks;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 namespace Play.Identity.Service
 {
@@ -46,7 +50,7 @@ namespace Play.Identity.Service
             serviceSettings.ServiceName
         );
 
-      services.AddMassTransitWithMessageBroker(Configuration ,retryConfigurator => 
+      services.AddMassTransitWithMessageBroker(Configuration, retryConfigurator =>
       {
         retryConfigurator.Interval(3, TimeSpan.FromSeconds(5));
         retryConfigurator.Ignore(typeof(UserUnknownException));
@@ -75,7 +79,18 @@ namespace Play.Identity.Service
         c.SwaggerDoc("v1", new OpenApiInfo { Title = "Play.Identity.Service", Version = "v1" });
       });
 
-      services.AddHealthChecks();
+      services.AddHealthChecks()
+        .Add(new HealthCheckRegistration(
+          "mongodb",
+          serviceProvider =>
+          {
+            var mongoClient = new MongoClient(mongoDbSettings.ConnectionString);
+            return new MongoDbHealthCheck(mongoClient);
+          },
+          HealthStatus.Unhealthy,
+          new[] { "ready" },
+          TimeSpan.FromSeconds(3)
+        ));
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -87,7 +102,7 @@ namespace Play.Identity.Service
         app.UseSwagger();
         app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Play.Identity.Service v1"));
 
-        app.UseCors(builder => 
+        app.UseCors(builder =>
         {
           builder.WithOrigins(Configuration[AllowedOriginSettings])
           .AllowAnyHeader()
@@ -108,7 +123,14 @@ namespace Play.Identity.Service
       {
         endpoints.MapControllers();
         endpoints.MapRazorPages();
-        endpoints.MapHealthChecks("/health");
+        endpoints.MapHealthChecks("/health/ready", new HealthCheckOptions()
+        {
+          Predicate = (check) => check.Tags.Contains("ready")
+        });
+        endpoints.MapHealthChecks("/health/live", new HealthCheckOptions()
+        {
+          Predicate = (check) => false
+        });
       });
     }
   }

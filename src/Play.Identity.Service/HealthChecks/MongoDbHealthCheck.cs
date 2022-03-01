@@ -6,11 +6,11 @@ using MongoDB.Driver;
 
 namespace Play.Identity.Service.HealthChecks
 {
-  public class MongoDnHealthCheck : IHealthCheck
+  public class MongoDbHealthCheck : IHealthCheck
   {
     private readonly MongoClient client;
 
-    public MongoDnHealthCheck(MongoClient client)
+    public MongoDbHealthCheck(MongoClient client)
     {
       this.client = client;
     }
