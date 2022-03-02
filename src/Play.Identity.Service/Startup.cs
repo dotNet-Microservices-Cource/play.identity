@@ -17,6 +17,7 @@ using Play.Identity.Service.HostedServices;
 using Play.Identity.Service.Settings;
 using Play.Identity.Settings;
 using Play.Common.HealthChecks;
+using Microsoft.AspNetCore.Http;
 
 namespace Play.Identity.Service
 {
@@ -98,6 +99,13 @@ namespace Play.Identity.Service
       }
 
       app.UseHttpsRedirection();
+
+      app.Use((context, next) => 
+      {
+        var identitySettings = Configuration.GetSection(nameof(IdentitySettings)).Get<IdentitySettings>();
+        context.Request.PathBase = new PathString(identitySettings.PathBase);
+        return next();
+      });
 
       app.UseStaticFiles();
 
