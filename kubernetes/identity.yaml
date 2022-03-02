@@ -14,10 +14,12 @@ spec:
     spec:
       containers:
       - name: identity
-        image: playeconomyapp.azurecr.io/play.identity:1.0.5
+        image: playeconomyapp.azurecr.io/play.identity:1.0.7
         env:
           - name: ServiceSettings__MessageBroker
             value: SERVICEBUS
+          - name: ServiceSettings__KeyVaultName
+            value: playeconomyapp  
         resources:
           limits:
             memory: "128Mi"
