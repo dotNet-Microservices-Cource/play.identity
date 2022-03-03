@@ -60,3 +60,8 @@ az aks pod-identity add --resource-group $resourcegroup --cluster-name $appname 
 $IDENTITY_CLIENT_ID=az identity show -g $resourcegroup -n $namespace --query clientId -otsv
 az keyvault set-policy -n $appname --secret-permissions get list --spn $IDENTITY_CLIENT_ID
 ```
+
+## Create the signing certificate
+```powershell
+kubectl apply -f .\kubernetes\singning-cer.yaml -n $namespace
+```
