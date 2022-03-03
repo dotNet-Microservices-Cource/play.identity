@@ -3,7 +3,7 @@ Play Economy Identity microservice
 
 ## Create and publish package
 ```powershell
-$version="1.0.8"
+$version="1.0.9"
 $owner="dotNet-Microservices-Cource"
 $gh_pat="[PAT HERE]"
 
